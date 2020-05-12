@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yijv.dao.IUserDao">
+
+    <!--登录-->
+    <select id="findUserByPhone" parameterType="java.lang.String" resultType="com.yijv.bean.UserInfo">
+        select * from tb_user where phone = #{phone}
+    </select>
+
+    <!--注册-->
+    <insert id="addUser" parameterType="String">
+        insert into tb_user(phone,password) values (#{phone},#{password})
+    </insert>
+
+    <!--修改个人信息-->
+    <update id="saveEdit" parameterType="UserInFo">
+        update tb_user set truename=#{truename},nickname=#{nickname},gender=#{gender},city=#{city} where phone=#{phone}
+    </update>
+
+    <!--根据user的id（user_id）去查找实名认证信息tb_user_auth-->
+    <select parameterType="Integer" resultType="userauth" id="findUserAuthById">
+        select *
+        from tb_user_auth
+        where user_id = #{userId}
+    </select>
+
+    <insert id="saveAuth" parameterType="UserauTh">
+        insert into
+        tb_user_auth(user_id,user_name,user_gender,user_card,user_card_address,user_live_address,create_time,update_time)
+        values (#{userId},#{userName},#{userGender},#{userCard},#{userCardAddress}, #{userLiveAddress},#{createTime},#{updateTime})
+
+    </insert>
+
+    <delete id="deleteAuthById" parameterType="Integer">
+        delete from tb_user_auth where user_id = #{userId}
+    </delete>
+
+    <!--修改密码-->
+    <update id="updPassword" parameterType="UserInfo">
+        update tb_user set password = #{password} where user_id = #{userId}
+    </update>
+
+    <!--收藏房源-->
+    <select id="getCollectViewById" parameterType="Integer" resultType="CollectView">
+        select * from tb_house as h,tb_collect as c where h.house_id = c.house_id and c.user_id = #{userId}
+    </select>
+    <!--查询是否已经收藏该房源-->
+    <select id="findCollectById" parameterType="Integer" resultType="Collect">
+        select * from tb_collect where user_id = #{userId} and house_id = #{houseId}
+    </select>
+    <!--增加收藏-->
+    <insert id="addCollect" parameterType="Collect">
+        insert into tb_collect(user_id,house_id,create_time,update_time)
+        values(#{userId},#{houseId},#{createTime},#{updateTime})
+    </insert>
+
+    <!--移出收藏-->
+    <delete id="deleteCollect" parameterType="Integer">
+        delete from tb_collect where coll_id = #{collId}
+    </delete>
+</mapper>
